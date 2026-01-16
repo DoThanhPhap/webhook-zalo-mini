@@ -1,0 +1,54 @@
+services:
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - DEBUG=False
+      - SECRET_KEY=${SECRET_KEY:-change-this-in-production}
+      - ALLOWED_HOSTS=localhost,127.0.0.1
+      - DATABASE_NAME=webhook_db
+      - DATABASE_USER=webhook_user
+      - DATABASE_PASSWORD=${DATABASE_PASSWORD:-webhook_pass}
+      - DATABASE_HOST=db
+      - DATABASE_PORT=5432
+      - REDIS_URL=redis://cache:6379/0
+      - ZALO_APP_ID=${ZALO_APP_ID}
+      - ZALO_OA_SECRET_KEY=${ZALO_OA_SECRET_KEY}
+    depends_on:
+      db:
+        condition: service_healthy
+      cache:
+        condition: service_started
+    volumes:
+      - ./logs:/app/logs
+    command: >
+      sh -c "python manage.py migrate --noinput &&
+             uvicorn config.asgi:application --host 0.0.0.0 --port 8000"
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: webhook_db
+      POSTGRES_USER: webhook_user
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:-webhook_pass}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U webhook_user -d webhook_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  cache:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+volumes:
+  postgres_data:
+  redis_data:
