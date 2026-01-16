@@ -71,6 +71,7 @@ ZALO_APP_ID = os.getenv('ZALO_APP_ID', '')
 ZALO_OA_SECRET_KEY = os.getenv('ZALO_OA_SECRET_KEY', '')
 WEBHOOK_TIMESTAMP_TOLERANCE = int(os.getenv('WEBHOOK_TIMESTAMP_TOLERANCE', '300'))
 RATE_LIMIT_PER_MINUTE = int(os.getenv('RATE_LIMIT_PER_MINUTE', '100'))
+SKIP_SIGNATURE_VERIFICATION = os.getenv('SKIP_SIGNATURE_VERIFICATION', 'false').lower() in ('true', '1', 'yes')
 
 # Security Headers (production)
 SECURE_SSL_REDIRECT = not DEBUG
