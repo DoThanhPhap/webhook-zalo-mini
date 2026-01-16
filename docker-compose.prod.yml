@@ -2,10 +2,11 @@ services:
   web:
     build: .
     restart: always
-    expose:
-      - "8000"
+    ports:
+      - "8000:8000"
     environment:
-      - DEBUG=False
+      - DEBUG=${DEBUG:-False}
+      - SKIP_SIGNATURE_VERIFICATION=${SKIP_SIGNATURE_VERIFICATION:-false}
       - SECRET_KEY=${SECRET_KEY}
       - ALLOWED_HOSTS=${ALLOWED_HOSTS:-hr.truonggia.vn,localhost}
       - DATABASE_NAME=${DATABASE_NAME:-webhook_db}
