@@ -83,7 +83,8 @@ SKIP_SIGNATURE_VERIFICATION = os.getenv('SKIP_SIGNATURE_VERIFICATION', 'false').
 SKIP_DATABASE = os.getenv('SKIP_DATABASE', 'false').lower() in ('true', '1', 'yes')
 
 # Security Headers (production)
-SECURE_SSL_REDIRECT = not DEBUG
+# SSL redirect disabled - Nginx handles SSL termination
+SECURE_SSL_REDIRECT = False
 SECURE_HSTS_SECONDS = 31536000 if not DEBUG else 0
 SECURE_HSTS_INCLUDE_SUBDOMAINS = not DEBUG
 SECURE_CONTENT_TYPE_NOSNIFF = True
