@@ -38,6 +38,11 @@ async def zalo_webhook(request):
         logger.warning(f"Payload too large from {client_ip}: {len(raw_body)} bytes")
         return JsonResponse({'error': 'Payload too large'}, status=413)
 
+    # Handle empty body (Zalo test ping)
+    if not raw_body or raw_body == b'':
+        logger.info(f"Empty body received from {client_ip} - treating as test ping")
+        return JsonResponse({'status': 'ok'}, status=200)
+
     try:
         payload = json.loads(raw_body)
     except json.JSONDecodeError:
