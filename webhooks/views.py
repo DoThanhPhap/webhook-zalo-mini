@@ -89,6 +89,13 @@ async def zalo_webhook(request):
     user_id = str(sender.get('id', ''))[:100]
     oa_id = str(payload.get('oa_id', ''))[:100]
 
+    # Check if database storage should be skipped
+    skip_database = getattr(settings, 'SKIP_DATABASE', False)
+
+    if skip_database:
+        logger.info(f"Event received (no DB): event={event_name}, payload={json.dumps(payload)}")
+        return JsonResponse({'status': 'received', 'stored': False}, status=200)
+
     # Store event
     try:
         event = await sync_to_async(WebhookEvent.objects.create)(

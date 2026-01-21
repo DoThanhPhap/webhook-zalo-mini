@@ -34,17 +34,25 @@ ROOT_URLCONF = 'config.urls'
 WSGI_APPLICATION = 'config.wsgi.application'
 ASGI_APPLICATION = 'config.asgi.application'
 
-# Database - PostgreSQL
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('DATABASE_NAME', 'webhook_db'),
-        'USER': os.getenv('DATABASE_USER', 'webhook_user'),
-        'PASSWORD': os.getenv('DATABASE_PASSWORD', 'webhook_pass'),
-        'HOST': os.getenv('DATABASE_HOST', 'localhost'),
-        'PORT': os.getenv('DATABASE_PORT', '5432'),
+# Database - PostgreSQL (or dummy if SKIP_DATABASE=true)
+if os.getenv('SKIP_DATABASE', 'false').lower() in ('true', '1', 'yes'):
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': ':memory:',
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.getenv('DATABASE_NAME', 'webhook_db'),
+            'USER': os.getenv('DATABASE_USER', 'webhook_user'),
+            'PASSWORD': os.getenv('DATABASE_PASSWORD', 'webhook_pass'),
+            'HOST': os.getenv('DATABASE_HOST', 'localhost'),
+            'PORT': os.getenv('DATABASE_PORT', '5432'),
+        }
+    }
 
 # Cache - Redis
 CACHES = {
@@ -72,6 +80,7 @@ ZALO_OA_SECRET_KEY = os.getenv('ZALO_OA_SECRET_KEY', '')
 WEBHOOK_TIMESTAMP_TOLERANCE = int(os.getenv('WEBHOOK_TIMESTAMP_TOLERANCE', '300'))
 RATE_LIMIT_PER_MINUTE = int(os.getenv('RATE_LIMIT_PER_MINUTE', '100'))
 SKIP_SIGNATURE_VERIFICATION = os.getenv('SKIP_SIGNATURE_VERIFICATION', 'false').lower() in ('true', '1', 'yes')
+SKIP_DATABASE = os.getenv('SKIP_DATABASE', 'false').lower() in ('true', '1', 'yes')
 
 # Security Headers (production)
 SECURE_SSL_REDIRECT = not DEBUG
