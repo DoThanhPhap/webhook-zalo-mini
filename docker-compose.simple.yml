@@ -1,0 +1,15 @@
+services:
+  web:
+    build: .
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      - DEBUG=false
+      - SKIP_SIGNATURE_VERIFICATION=true
+      - SKIP_DATABASE=true
+      - SECRET_KEY=${SECRET_KEY:-insecure-dev-key}
+      - ALLOWED_HOSTS=${ALLOWED_HOSTS:-hr.truonggia.vn,localhost}
+    volumes:
+      - ./logs:/app/logs
+    command: gunicorn config.asgi:application -k uvicorn.workers.UvicornWorker -w 2 -b 0.0.0.0:8000
